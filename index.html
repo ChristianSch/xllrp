@@ -1,0 +1,131 @@
+<!doctype html>
+<html class="no-js">
+<head>
+  <meta charset="utf-8">
+  <title>Parallax</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width">
+
+  <style type="text/css" media="screen">
+    #wrap {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    #firstContainer {
+      height: 200px;
+    }
+
+    #mainContainer {
+      height: 300px;
+      background: grey;
+      color: white;
+    }
+
+    #secondContainer {
+      height: 300px;
+    }
+
+    #testElement {
+      font-size: 50px;
+      font-weight: 500;
+      font-family: "Helvetica Neue";
+      text-align: center;
+      display: block;
+      opacity: 1;
+    }
+  </style>
+
+</head>
+<body>
+  <div id="wrap">
+    <div id="firstContainer">
+    </div>
+
+    <div id="mainContainer">
+      <p id="testElement">Testelement</p>
+    </div>
+
+    <div id="secondContainer">
+    </div>
+  </div>
+
+  <script charset="utf-8" >
+    (function() {
+      function round(val) {
+        return Math.floor(val * 100) / 100;
+      }
+
+      function distributionStep(start, end, range) {
+        var step = (Math.abs(start - end) / range);
+
+        if (start > end) {
+          return -step;
+        }
+
+        return step;
+      }
+
+      function onScroll(event) {
+        animateOnScroll(window.pageYOffset);
+      }
+
+      var animatedElement = document.getElementById('testElement');
+      var animatedProperty = "opacity";
+
+      var animationStartPoint = 200;
+      var animationEndPoint = 500;
+
+      var animationStartValue = 1;
+      var animationEndValue = 0;
+
+      var stepSize = distributionStep(animationStartValue, animationEndValue,
+        Math.abs(animationEndPoint - animationStartPoint));
+
+      function animateOnScroll(viewPortXPosition) {
+      // the last known position or undefined if not previously called
+      var lastPos = arguments.callee.lastPos;
+      var lastVal = arguments.callee.lastVal || animationStartValue;
+
+      // last known position is not undefined
+      if (lastPos) {
+
+        var scrollDelta = Math.abs(viewPortXPosition - lastPos);
+        var stepValue =  scrollDelta * stepSize;
+
+        // user scrolled down
+        if (lastPos < viewPortXPosition) {
+          var newPropertyValue = lastVal + stepValue;
+
+          animatedElement.style[animatedProperty] = newPropertyValue;
+          arguments.callee.lastVal = newPropertyValue;
+          arguments.callee.scrollDirection = -1;
+
+        // user scrolled up
+        } else if (lastPos > viewPortXPosition) {
+          var newPropertyValue = lastVal - stepValue;
+
+          animatedElement.style[animatedProperty] = newPropertyValue;
+          arguments.callee.lastVal = newPropertyValue;
+          arguments.callee.scrollDirection = 1;
+
+        // vertical scroll or fast up and down scrolling that results in a
+        // difference of zero
+      } else {
+        console.log("not relevant")
+        arguments.callee.scrollDirection = 0;
+      }
+
+    } else {
+      // console.log("first scroll")
+    }
+
+      // set recent position as last known position
+      arguments.callee.lastPos = viewPortXPosition;
+    }
+
+    window.onscroll = onScroll;
+  })();
+</script>
+</body>
+</html>
